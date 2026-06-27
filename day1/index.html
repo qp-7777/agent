@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<body>
+    <button id="close">关闭</button>
+    <div id="content"></div>
+    <script>
+        const contentDom = document.getElementById('content');
+        const closeDom = document.getElementById('close')
+        // 1. 创建sse实例
+        const sse = new EventSource('http://localhost:3000/stream');
+
+        // 2. 监听正常消息
+        sse.onmessage = (e) => {
+            const text = e.data;
+            // 判断传输是否结束
+            if (text === '[DONE]') {
+                contentDom.innerHTML += '<br>====传输完成====';
+                sse.close();
+                return;
+            }
+            // 页面追加文字，模拟打字效果
+            contentDom.innerHTML += text + '<br>';
+        }
+
+        // 3. 监听连接报错（网络断开、接口404）
+        sse.onerror = (err) => {
+            contentDom.innerHTML += '<br>连接异常，自动重试中...';
+            console.error('sse异常', err);
+        }
+
+        // 4. 监听连接成功
+        sse.onopen = () => {
+            contentDom.innerHTML += '连接建立成功<br>';
+        }
+
+        sse.addEventListener('msg', (e) => { 
+            console.log(e.data);
+        })
+
+        closeDom.onclick = function () {
+            close()
+        }
+        function close() {
+            sse.close();
+            alert("关闭链接")
+        }
+    </script>
+</body>
+
+</html>

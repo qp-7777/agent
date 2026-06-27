@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="box"></div>
+</body>
+
+<script>
+    const box = document.getElementById('box');
+    const sse = new EventSource('http://localhost:3000/stream');
+    let buffer = ""
+    let fullText = ""
+    let arr = []
+    sse.onmessage = (e) => {
+        if (e.data === '[DONE]') {
+            box.innerHTML += '<br>流式输出全部完成';
+            sse.close();
+            return;
+        }
+        try {
+            // 解析单条分片JSON
+            const data = JSON.parse(e.data);
+            const word = data.choices[0].delta.content;
+            fullText += word;
+            box.innerText = fullText;
+        } catch (err) {
+            console.log('单条分片解析失败，跳过', err);
+        }
+    }
+
+    sse.onerror = () => {
+        box.innerHTML += '<br>网络连接出错，正在重试';
+    }
+</script>
+
+</html>
