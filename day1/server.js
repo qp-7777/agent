@@ -28,8 +28,14 @@ app.get('/stream', (req, res) => {
 
 
     // 模拟AI逐段输出文字
-    const textArr = ['前', '端', '遇', '到', 'AI', '冲', '击', '要', '学', 'RAG'];
-    let i = 0;
+    const textArr = [
+        "# SSE流式渲染代码示例\n\n",
+        "这是一个 `console.log` 示例：\n\n",
+        "```js\nconsole.log('hello world');\n```\n\n",
+        "还有一个 Python 示例：\n\n",
+        "```python\nprint('hello')\n```\n\n",
+        "遇到AI冲击要学RAG"
+    ]; let i = 0;
     const timer = setInterval(() => {
         if (i >= textArr.length) {
             res.write(`data: [DONE]\n\n`);
